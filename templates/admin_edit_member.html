@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block title %}EDIT ATHLETE: {{ member.full_name }} // KRONOS COMMAND{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+  <!-- Header Banner -->
+  <div class="gritty-card rivet-corner p-6 sm:p-8 border-2 border-yellow-400 mb-8 relative overflow-hidden">
+    <div class="h-1.5 w-full hazard-stripe absolute top-0 left-0"></div>
+
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-3 mb-2">
+          <span class="bg-yellow-400 text-black text-xs font-black font-stencil px-2.5 py-1 tracking-wider">
+            ATHLETE DOSSIER EDITOR
+          </span>
+          <span class="text-zinc-400 font-tactical text-xs font-mono">
+            ID: {{ member.username }}
+          </span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-stencil font-black text-white tracking-wider">
+          EDITING: <span class="text-yellow-400">{{ member.full_name }}</span>
+        </h1>
+        <p class="text-xs font-tactical text-zinc-400 mt-1">
+          UPDATE PROFILE, ASSIGNED COACH, NUTRITION TARGETS, AND 7-DAY WORKOUT SPLIT.
+        </p>
+      </div>
+
+      <a href="/admin/dashboard" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-4 py-2 text-xs font-stencil tracking-wider uppercase transition inline-flex items-center gap-1.5 self-start">
+        &larr; BACK TO ROSTER
+      </a>
+    </div>
+  </div>
+
+  <!-- Edit Form -->
+  <form action="/admin/members/{{ member.id }}/edit" method="POST" class="gritty-card p-6 sm:p-8 border border-zinc-800 space-y-8">
+    
+    <!-- Section 1: Profile & Credentials -->
+    <div>
+      <div class="text-xs font-stencil text-yellow-400 tracking-wider uppercase mb-4 flex items-center gap-2 border-b border-zinc-800 pb-2">
+        <i class="fa-solid fa-id-card"></i> 1. ATHLETE PROFILE & COACH ASSIGNMENT
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div>
+          <label class="block text-xs font-tactical text-zinc-300 uppercase tracking-wider mb-1">
+            Full Name <span class="text-red-500">*</span>
+          </label>
+          <input 
+            type="text" 
+            name="full_name" 
+            required 
+            value="{{ member.full_name }}" 
+            class="w-full bg-zinc-950 border border-zinc-700 text-sm font-tactical px-3.5 py-2.5 text-white focus:outline-none focus:border-yellow-400"
+          >
+        </div>
+
+        <div>
+          <label class="block text-xs font-tactical text-zinc-300 uppercase tracking-wider mb-1">
+            Phone Number (Login Username) <span class="text-yellow-400">*</span>
+          </label>
+          <input 
+            type="text" 
+            name="username" 
+            required 
+            value="{{ member.username }}" 
+            class="w-full bg-zinc-950 border border-zinc-700 text-sm font-tactical px-3.5 py-2.5 text-white focus:outline-none focus:border-yellow-400"
+          >
+        </div>
+
+        <div>
+          <label class="block text-xs font-tactical text-zinc-300 uppercase tracking-wider mb-1">
+            Assigned Personal Trainer
+          </label>
+          <select 
+            name="trainer_name" 
+            class="w-full bg-zinc-950 border border-zinc-700 text-sm font-tactical px-3.5 py-2.5 text-white focus:outline-none focus:border-yellow-400"
+          >
+            <option value="Coach Vikram (Head Strength)" {% if member.trainer_name == 'Coach Vikram (Head Strength)' %}selected{% endif %}>Coach Vikram (Head Strength)</option>
+            <option value="Coach Raghav (Powerlifting)" {% if member.trainer_name == 'Coach Raghav (Powerlifting)' %}selected{% endif %}>Coach Raghav (Powerlifting)</option>
+            <option value="Coach Simran (Functional & HIIT)" {% if member.trainer_name == 'Coach Simran (Functional & HIIT)' %}selected{% endif %}>Coach Simran (Functional & HIIT)</option>
+            <option value="Floor Trainer (General)" {% if member.trainer_name == 'Floor Trainer (General)' %}selected{% endif %}>Floor Trainer (General)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-tactical text-zinc-300 uppercase tracking-wider mb-1">
+            Reset Password / Key (Leave empty to keep unchanged)
+          </label>
+          <input 
+            type="text" 
+            name="password" 
+            placeholder="Type new password to override..." 
+            class="w-full bg-zinc-950 border border-zinc-700 text-sm font-tactical px-3.5 py-2.5 text-white focus:outline-none focus:border-yellow-400"
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Diet Plan Protocol -->
+    <div class="border-t border-zinc-800 pt-6">
+      <div class="flex items-center justify-between mb-4 border-b border-zinc-800 pb-2">
+        <div class="text-xs font-stencil text-yellow-400 tracking-wider uppercase flex items-center gap-2">
+          <i class="fa-solid fa-utensils"></i> 2. FUEL & NUTRITION PROTOCOL
+        </div>
+
+        <label class="inline-flex items-center gap-2 cursor-pointer bg-zinc-900 border border-zinc-700 px-3 py-1.5 hover:border-yellow-400 transition">
+          <input 
+            type="checkbox" 
+            id="has_diet_plan" 
+            name="has_diet_plan" 
+            value="true" 
+            {% if member.has_diet_plan %}checked{% endif %}
+            onchange="toggleDietTextarea(this.checked)"
+            class="w-4 h-4 accent-yellow-400 rounded-none cursor-pointer"
+          >
+          <span class="text-xs font-tactical uppercase font-bold text-white">Active Diet Plan</span>
+        </label>
+      </div>
+
+      <div id="dietContainer" class="{% if not member.has_diet_plan %}hidden{% endif %} space-y-2">
+        <div class="flex items-center justify-between text-[11px] font-tactical text-zinc-400">
+          <span>Target calories, macronutrients, meal timings, and hydration instructions:</span>
+          <button 
+            type="button" 
+            onclick="loadDietTemplate()" 
+            class="text-yellow-400 hover:underline"
+          >
+            + Load High-Protein Bulk Preset
+          </button>
+        </div>
+        <textarea 
+          id="diet_details" 
+          name="diet_details" 
+          rows="5" 
+          placeholder="Customized nutrition targets..."
+          class="w-full bg-zinc-950 border border-zinc-700 text-xs font-mono p-3 text-zinc-200 focus:outline-none focus:border-yellow-400 leading-relaxed"
+        >{{ member.diet_details or '' }}</textarea>
+      </div>
+    </div>
+
+    <!-- Section 3: 7-Day Workout Split Editor -->
+    <div class="border-t border-zinc-800 pt-6">
+      <div class="flex items-center justify-between mb-4 border-b border-zinc-800 pb-2">
+        <div class="text-xs font-stencil text-red-500 tracking-wider uppercase flex items-center gap-2">
+          <i class="fa-solid fa-calendar-week"></i> 3. 7-DAY WORKOUT SCHEDULE (DAYWISE SPLIT)
+        </div>
+        <span class="text-[11px] font-tactical text-zinc-400">Calibrated for Sanigawan Rd facility</span>
+      </div>
+
+      <div class="space-y-4">
+        {% set days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"] %}
+        {% for d in days %}
+          {% set plan = plans_dict.get(d) %}
+          <div class="bg-zinc-950/80 border border-zinc-800 p-4 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="font-stencil font-bold text-base text-yellow-400 tracking-wider uppercase">
+                {{ d }}
+              </span>
+              <span class="text-[11px] font-tactical text-zinc-400">DAY {{ loop.index }}</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label class="block text-[10px] font-tactical text-zinc-400 uppercase mb-1">Target Muscle Group</label>
+                <input 
+                  type="text" 
+                  name="muscle_{{ d }}" 
+                  value="{{ plan.muscle_group if plan and plan.muscle_group else 'REST & RECOVERY' }}"
+                  class="w-full bg-zinc-900 border border-zinc-700 text-xs font-tactical px-3 py-2 text-white focus:outline-none focus:border-yellow-400"
+                >
+              </div>
+
+              <div class="md:col-span-2">
+                <label class="block text-[10px] font-tactical text-zinc-400 uppercase mb-1">Exercise Protocol (Sets, Reps, Weights)</label>
+                <textarea 
+                  name="exercises_{{ d }}" 
+                  rows="3" 
+                  class="w-full bg-zinc-900 border border-zinc-700 text-xs font-mono p-2.5 text-zinc-200 focus:outline-none focus:border-yellow-400 leading-normal"
+                >{{ plan.exercise_list if plan and plan.exercise_list else 'Rest Day - Mobility and hydration.' }}</textarea>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Submit / Cancel -->
+    <div class="border-t border-zinc-800 pt-6 flex items-center justify-between">
+      <a 
+        href="/admin/dashboard" 
+        class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-5 py-3 font-stencil text-xs tracking-wider uppercase transition"
+      >
+        CANCEL & RETURN
+      </a>
+
+      <button 
+        type="submit" 
+        class="bg-yellow-400 hover:bg-yellow-300 text-black font-stencil font-black text-sm px-8 py-3.5 tracking-wider uppercase transition-all shadow-lg shadow-yellow-400/20 flex items-center gap-2"
+      >
+        <i class="fa-solid fa-floppy-disk"></i> SAVE ATHLETE CHANGES
+      </button>
+    </div>
+
+  </form>
+
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  function toggleDietTextarea(checked) {
+    const container = document.getElementById('dietContainer');
+    if (checked) {
+      container.classList.remove('hidden');
+    } else {
+      container.classList.add('hidden');
+    }
+  }
+
+  function loadDietTemplate() {
+    const textarea = document.getElementById('diet_details');
+    textarea.value = `TARGET MACROS: 2,800 kcal | 185g Protein | 320g Carbs | 65g Fat
+MEAL 1 (08:00 AM): 6 Egg Whites + 2 Whole Eggs, 80g Rolled Oats with 1 Scoop Whey & Almonds
+MEAL 2 (12:30 PM): 200g Grilled Chicken Breast, 150g Cooked Basmati Rice, Steamed Broccoli
+MEAL 3 (04:30 PM - Pre-Workout): 2 Bananas, 2 Whole Wheat Toast with Peanut Butter, Black Coffee
+MEAL 4 (07:30 PM - Post-Workout): 1.5 Scoops Whey Isolate, 5g Creatine Monohydrate with Coconut Water
+MEAL 5 (09:30 PM): 200g Paneer or Fish, Large Green Salad, Olive Oil dressing`;
+  }
+</script>
+{% endblock %}

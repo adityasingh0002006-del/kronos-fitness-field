@@ -1,26 +1,173 @@
 @import "tailwindcss";
 
+@theme {
+  --color-pitch-950: #050505;
+  --color-pitch-900: #0a0a0a;
+  --color-pitch-850: #0f0f11;
+  --color-pitch-800: #141416;
+  --color-pitch-750: #1a1a1e;
+  --color-pitch-700: #222226;
+  
+  --color-hazard-yellow: #facc15;
+  --color-hazard-bright: #ffe600;
+  --color-hazard-amber: #eab308;
+  
+  --color-crimson-blood: #dc2626;
+  --color-crimson-bright: #ef4444;
+  --color-crimson-dark: #991b1b;
+  
+  --color-steel-100: #f3f4f6;
+  --color-steel-200: #e5e7eb;
+  --color-steel-300: #d1d5db;
+  --color-steel-400: #9ca3af;
+  --color-steel-500: #6b7280;
+  --color-steel-600: #4b5563;
+  --color-steel-700: #374151;
+  --color-steel-800: #1f2937;
+  
+  --font-display: var(--font-bebas), sans-serif;
+  --font-body: var(--font-montserrat), sans-serif;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-pitch: #0a0a0a;
+  --fg-steel: #f3f4f6;
+  --hazard: #facc15;
+  --crimson: #ef4444;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+  border-left: 1px solid #1f2937;
+}
+::-webkit-scrollbar-thumb {
+  background: #facc15;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #ef4444;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Hardcore Grunge / Tactical Utilities */
+.hazard-stripes {
+  background: repeating-linear-gradient(
+    -45deg,
+    #facc15,
+    #facc15 12px,
+    #000000 12px,
+    #000000 24px
+  );
+}
+
+.hazard-stripes-subtle {
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(250, 204, 21, 0.25),
+    rgba(250, 204, 21, 0.25) 10px,
+    transparent 10px,
+    transparent 20px
+  );
+}
+
+.hazard-stripes-crimson {
+  background: repeating-linear-gradient(
+    -45deg,
+    #dc2626,
+    #dc2626 10px,
+    #000000 10px,
+    #000000 20px
+  );
+}
+
+/* Tactical Corner Chamfers */
+.clip-chamfer {
+  clip-path: polygon(
+    14px 0%,
+    100% 0%,
+    100% calc(100% - 14px),
+    calc(100% - 14px) 100%,
+    0% 100%,
+    0% 14px
+  );
+}
+
+.clip-chamfer-sm {
+  clip-path: polygon(
+    8px 0%,
+    100% 0%,
+    100% calc(100% - 8px),
+    calc(100% - 8px) 100%,
+    0% 100%,
+    0% 8px
+  );
+}
+
+.clip-corner-br {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%);
+}
+
+.clip-banner {
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%);
+}
+
+/* Dark Concrete / Metal Grain Texture Overlay */
+.bg-tactical-grid {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
+
+.bg-tactical-dots {
+  background-image: radial-gradient(rgba(250, 204, 21, 0.12) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Glowing text & box drop shadows */
+.text-glow-yellow {
+  text-shadow: 0 0 16px rgba(250, 204, 21, 0.6), 0 0 32px rgba(250, 204, 21, 0.25);
+}
+
+.text-glow-red {
+  text-shadow: 0 0 16px rgba(239, 68, 68, 0.6), 0 0 32px rgba(239, 68, 68, 0.25);
+}
+
+.box-glow-yellow {
+  box-shadow: 0 0 25px -5px rgba(250, 204, 21, 0.35);
+}
+
+.box-glow-red {
+  box-shadow: 0 0 25px -5px rgba(239, 68, 68, 0.35);
+}
+
+/* Metal brushed simulation */
+.brushed-metal {
+  background: linear-gradient(135deg, #18181b 0%, #27272a 50%, #18181b 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.font-bebas {
+  font-family: var(--font-bebas), sans-serif;
+  letter-spacing: 0.04em;
+}
+
+.font-montserrat {
+  font-family: var(--font-montserrat), sans-serif;
+}
+
+/* Glitch scanlines animation */
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(1000%);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.animate-scanline {
+  animation: scanline 8s linear infinite;
 }

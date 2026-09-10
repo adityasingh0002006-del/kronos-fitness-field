@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}STAFF COMMAND LOGIN // KRONOS FITNESS FIELD{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto px-4 py-12 sm:py-20">
+  
+  <!-- Outer Tactical Container -->
+  <div class="gritty-card rivet-corner p-6 sm:p-8 border-2 border-red-900/60 relative overflow-hidden">
+    
+    <!-- Top Crimson Hazard Strip -->
+    <div class="h-1.5 w-full hazard-stripe-red absolute top-0 left-0"></div>
+
+    <!-- Header / Badge -->
+    <div class="text-center mb-8 pt-2">
+      <div class="inline-flex items-center justify-center w-14 h-14 bg-red-600 text-white mb-3 font-black text-2xl shadow-lg shadow-red-600/30">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+      <h1 class="text-3xl font-stencil font-black tracking-wider text-white">STAFF COMMAND</h1>
+      <p class="text-xs font-tactical text-red-400 mt-1 uppercase tracking-widest">
+        KRONOS ADMIN & COACH CONTROLLER
+      </p>
+      <div class="mt-2 text-[11px] text-zinc-400 font-tactical flex items-center justify-center gap-1.5">
+        <i class="fa-solid fa-lock"></i> AUTHORIZED PERSONNEL ONLY
+      </div>
+    </div>
+
+    <!-- Admin Form -->
+    <form action="/admin/login" method="POST" class="space-y-5">
+      <div>
+        <label for="username" class="block text-xs font-tactical text-zinc-300 uppercase tracking-wider mb-2 flex items-center justify-between">
+          <span><i class="fa-solid fa-user-shield text-red-500 mr-1.5"></i> Staff Identifier</span>
+          <span class="text-[10px] text-zinc-400">Admin ID</span>
+        </label>
+        <div class="relative">
+          <input 
+            type="text" 
+            id="admin_username" 
+            name="username" 
+            required 
+            placeholder="e.g. admin" 
+            value="{{ username or '' }}"
+            class="w-full bg-zinc-950 border border-zinc-700 focus:border-red-500 text-white px-4 py-3 text-sm font-tactical tracking-wider focus:outline-none focus:ring-1 focus:ring-red-500 transition"
+          >
+          <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-zinc-400 text-xs">
+            <i class="fa-solid fa-terminal"></i>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label for="password" class="block text-xs font-tactical text-zinc-300 uppercase tracking-wider mb-2 flex items-center justify-between">
+          <span><i class="fa-solid fa-key text-red-500 mr-1.5"></i> Master Key</span>
+          <span class="text-[10px] text-zinc-400">Encrypted</span>
+        </label>
+        <div class="relative">
+          <input 
+            type="password" 
+            id="admin_password" 
+            name="password" 
+            required 
+            placeholder="••••••••" 
+            class="w-full bg-zinc-950 border border-zinc-700 focus:border-red-500 text-white px-4 py-3 text-sm font-tactical tracking-wider focus:outline-none focus:ring-1 focus:ring-red-500 transition"
+          >
+          <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-zinc-400 text-xs">
+            <i class="fa-solid fa-shield"></i>
+          </div>
+        </div>
+      </div>
+
+      <button 
+        type="submit" 
+        class="w-full bg-red-600 hover:bg-red-500 text-white font-stencil font-black text-lg py-3 tracking-wider uppercase transition-all transform active:scale-[0.99] flex items-center justify-center gap-2 shadow-lg shadow-red-600/30"
+      >
+        <i class="fa-solid fa-fingerprint"></i> AUTHENTICATE COMMAND
+      </button>
+    </form>
+
+    <!-- Demo Credentials Quick-Fill -->
+    <div class="mt-8 pt-6 border-t border-zinc-800">
+      <div class="text-[11px] font-tactical text-zinc-400 uppercase tracking-wider mb-3 flex items-center justify-between">
+        <span><i class="fa-solid fa-circle-info text-red-400 mr-1"></i> Default Staff Credentials:</span>
+        <span class="text-emerald-400 text-[10px]">Active</span>
+      </div>
+      
+      <button 
+        type="button" 
+        onclick="fillAdminDemo('admin', 'kronos2026')"
+        class="w-full text-left bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-700 hover:border-red-500/60 p-2.5 transition flex items-center justify-between group"
+      >
+        <div>
+          <div class="text-white font-bold group-hover:text-red-400 transition font-tactical">Gym Owner / Head Coach</div>
+          <div class="text-zinc-400 text-[11px] font-tactical">User: <code class="text-red-300">admin</code> &bull; Pass: <code class="text-red-300">kronos2026</code></div>
+        </div>
+        <span class="text-[10px] bg-red-500/10 text-red-400 border border-red-500/30 px-2 py-0.5 font-bold font-tactical">CLICK TO LOAD</span>
+      </button>
+    </div>
+
+    <!-- Switch to Athlete Portal -->
+    <div class="mt-6 text-center">
+      <a href="/login" class="text-xs font-tactical text-zinc-400 hover:text-yellow-400 transition inline-flex items-center gap-1.5">
+        &larr; Return to Athlete War Room Login
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function fillAdminDemo(user, pass) {
+    document.getElementById('admin_username').value = user;
+    document.getElementById('admin_password').value = pass;
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,490 @@
+{% extends "base.html" %}
+
+{% block title %}STAFF COMMAND ROSTER // KRONOS FITNESS FIELD{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+  <!-- Command Center Header -->
+  <div class="gritty-card rivet-corner p-6 sm:p-8 border-2 border-red-900/60 mb-8 relative overflow-hidden">
+    <div class="h-1.5 w-full hazard-stripe-red absolute top-0 left-0"></div>
+
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+      <div>
+        <div class="flex items-center gap-3 mb-2">
+          <span class="bg-red-600 text-white text-xs font-black font-stencil px-2.5 py-1 tracking-wider">
+            ADMIN COMMAND CENTER
+          </span>
+          <span class="text-zinc-400 font-tactical text-xs">
+            SANIGAWAN RD, KANPUR // FACILITY CONTROLLER
+          </span>
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-stencil font-black text-white tracking-wider">
+          MEMBER ROSTER & WORKOUT DISPATCH
+        </h1>
+        <p class="text-sm font-tactical text-zinc-400 mt-1">
+          MANAGE ATHLETE ENROLLMENT, COACH ASSIGNMENTS, CUSTOM NUTRITION, AND 7-DAY SPLITS.
+        </p>
+      </div>
+
+      <!-- Quick Action: Trigger Add Member Modal / Accordion -->
+      <div>
+        <button 
+          type="button" 
+          onclick="toggleAddMemberModal(true)"
+          class="bg-yellow-400 hover:bg-yellow-300 text-black font-stencil font-black text-sm px-5 py-3.5 tracking-wider uppercase transition-all transform active:scale-95 shadow-lg shadow-yellow-400/20 flex items-center gap-2"
+        >
+          <i class="fa-solid fa-user-plus text-base"></i> ENROLL NEW ATHLETE
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Metric Counters -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+    <div class="gritty-card p-4 border-l-4 border-l-yellow-400">
+      <div class="text-[11px] font-tactical text-zinc-400 uppercase tracking-wider">TOTAL REGISTERED</div>
+      <div class="text-3xl font-stencil font-black text-white mt-1">{{ members|length }}</div>
+      <div class="text-[10px] font-tactical text-zinc-400 mt-0.5">Active athletes</div>
+    </div>
+
+    <div class="gritty-card p-4 border-l-4 border-l-red-600">
+      <div class="text-[11px] font-tactical text-zinc-400 uppercase tracking-wider">DIET PROTOCOLS</div>
+      <div class="text-3xl font-stencil font-black text-yellow-400 mt-1">
+        {{ members|selectattr('has_diet_plan')|list|length }}
+      </div>
+      <div class="text-[10px] font-tactical text-zinc-400 mt-0.5">Custom nutrition targets</div>
+    </div>
+
+    <div class="gritty-card p-4 border-l-4 border-l-emerald-500">
+      <div class="text-[11px] font-tactical text-zinc-400 uppercase tracking-wider">WORKOUT SCHEDULES</div>
+      <div class="text-3xl font-stencil font-black text-emerald-400 mt-1">
+        {{ members|length * 7 }}
+      </div>
+      <div class="text-[10px] font-tactical text-zinc-400 mt-0.5">Active daily workout splits</div>
+    </div>
+
+    <div class="gritty-card p-4 border-l-4 border-l-zinc-500">
+      <div class="text-[11px] font-tactical text-zinc-400 uppercase tracking-wider">COACHING SQUAD</div>
+      <div class="text-3xl font-stencil font-black text-white mt-1">
+        {{ active_trainers_count }}
+      </div>
+      <div class="text-[10px] font-tactical text-zinc-400 mt-0.5">Trainers assigned</div>
+    </div>
+  </div>
+
+  <!-- Search and Member Table Section -->
+  <div class="gritty-card rivet-corner p-6 border border-zinc-800">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-zinc-800">
+      <div class="flex items-center gap-3">
+        <span class="w-3 h-5 bg-yellow-400"></span>
+        <h2 class="text-xl font-stencil font-bold tracking-wider text-white">
+          ATHLETE DIRECTORY
+        </h2>
+      </div>
+
+      <!-- Quick Search Bar -->
+      <div class="relative w-full sm:w-72">
+        <input 
+          type="text" 
+          id="memberSearchInput" 
+          onkeyup="filterMembers()" 
+          placeholder="Search by name, phone, or coach..." 
+          class="w-full bg-zinc-950 border border-zinc-700 text-xs font-tactical px-4 py-2.5 text-zinc-200 focus:outline-none focus:border-yellow-400"
+        >
+        <i class="fa-solid fa-magnifying-glass absolute right-3 top-3 text-zinc-400 text-xs"></i>
+      </div>
+    </div>
+
+    <!-- Roster Table -->
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse" id="membersTable">
+        <thead>
+          <tr class="border-b border-zinc-800 text-[11px] font-tactical text-zinc-400 uppercase tracking-wider bg-zinc-950/60">
+            <th class="py-3 px-4">Athlete / ID</th>
+            <th class="py-3 px-4">Trainer</th>
+            <th class="py-3 px-4">Diet Status</th>
+            <th class="py-3 px-4">Weekly Split</th>
+            <th class="py-3 px-4">Enrolled</th>
+            <th class="py-3 px-4 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-zinc-800/80 text-xs font-tactical">
+          {% for m in members %}
+          <tr class="hover:bg-zinc-900/50 transition member-row">
+            
+            <!-- Athlete Name & Phone -->
+            <td class="py-3.5 px-4">
+              <div class="font-stencil text-base font-bold text-white member-name">{{ m.full_name }}</div>
+              <div class="text-zinc-400 text-[11px] flex items-center gap-1.5 member-phone">
+                <i class="fa-solid fa-phone text-yellow-400 text-[10px]"></i>
+                {{ m.username }}
+              </div>
+            </td>
+
+            <!-- Trainer -->
+            <td class="py-3.5 px-4 member-trainer">
+              <span class="inline-flex items-center gap-1.5 text-zinc-300 font-bold">
+                <i class="fa-solid fa-dumbbell text-red-500 text-[10px]"></i>
+                {{ m.trainer_name or 'Floor Trainer' }}
+              </span>
+            </td>
+
+            <!-- Diet Status Badge -->
+            <td class="py-3.5 px-4">
+              {% if m.has_diet_plan %}
+                <span class="bg-yellow-400/10 text-yellow-400 border border-yellow-400/40 px-2.5 py-1 text-[11px] font-bold inline-flex items-center gap-1">
+                  <i class="fa-solid fa-fire text-[10px]"></i> ACTIVE DIET
+                </span>
+              {% else %}
+                <span class="bg-zinc-800 text-zinc-400 border border-zinc-700 px-2.5 py-1 text-[11px] inline-flex items-center gap-1">
+                  <i class="fa-solid fa-ban text-[10px]"></i> NOT OPTED
+                </span>
+              {% endif %}
+            </td>
+
+            <!-- Workout Status -->
+            <td class="py-3.5 px-4">
+              <span class="bg-zinc-900 text-emerald-400 border border-zinc-700 px-2.5 py-1 text-[11px] inline-flex items-center gap-1 font-mono">
+                <i class="fa-solid fa-calendar-check text-[10px]"></i> {{ m.workout_plans|length }}/7 Days Set
+              </span>
+            </td>
+
+            <!-- Created At -->
+            <td class="py-3.5 px-4 text-zinc-400 font-mono text-[11px]">
+              {{ m.created_at.strftime('%d %b %Y') if m.created_at else 'Recent' }}
+            </td>
+
+            <!-- Actions -->
+            <td class="py-3.5 px-4 text-right">
+              <div class="flex items-center justify-end gap-2">
+                <a 
+                  href="/admin/members/{{ m.id }}/edit" 
+                  class="bg-zinc-800 hover:bg-yellow-400 hover:text-black text-zinc-300 border border-zinc-700 px-3 py-1.5 font-stencil tracking-wider transition inline-flex items-center gap-1"
+                  title="Edit Profile, Split & Diet"
+                >
+                  <i class="fa-solid fa-pen-to-square"></i> EDIT
+                </a>
+                
+                <form action="/admin/members/{{ m.id }}/delete" method="POST" onsubmit="return confirm('WARNING: Are you sure you want to completely erase athlete {{ m.full_name }} ({{ m.username }}) and their workout schedule?');" class="inline">
+                  <button 
+                    type="submit" 
+                    class="bg-red-950/40 hover:bg-red-600 text-red-400 hover:text-white border border-red-800/40 px-3 py-1.5 font-stencil tracking-wider transition inline-flex items-center gap-1"
+                    title="Delete Athlete"
+                  >
+                    <i class="fa-solid fa-trash-can"></i> DELETE
+                  </button>
+                </form>
+              </div>
+            </td>
+
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="6" class="py-8 text-center text-zinc-400 font-tactical">
+              No athletes registered yet. Click "Enroll New Athlete" above to add the first member.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ============================================================ -->
+<!-- MODAL: ENROLL NEW ATHLETE (With Daywise Workout & Diet Planner) -->
+<!-- ============================================================ -->
+<div id="addMemberModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden overflow-y-auto">
+  <div class="min-h-screen px-4 py-8 flex items-center justify-center">
+    <div class="gritty-card rivet-corner border-2 border-yellow-400 w-full max-w-4xl relative overflow-hidden bg-[#101012] text-zinc-100 shadow-2xl">
+      
+      <!-- Top Hazard Stripe -->
+      <div class="h-2 w-full hazard-stripe"></div>
+
+      <!-- Modal Header -->
+      <div class="p-6 border-b border-zinc-800 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-yellow-400 text-black flex items-center justify-center font-black text-xl font-stencil">
+            <i class="fa-solid fa-user-plus"></i>
+          </div>
+          <div>
+            <h2 class="text-2xl font-stencil font-bold tracking-wider text-white">
+              ENROLL NEW ATHLETE // DOSSIER CREATION
+            </h2>
+            <p class="text-xs font-tactical text-zinc-400">
+              CREATE MEMBER LOGIN, ASSIGN COACH, CONFIGURE DIET PROTOCOL & 7-DAY WORKOUT SPLIT.
+            </p>
+          </div>
+        </div>
+
+        <button 
+          type="button" 
+          onclick="toggleAddMemberModal(false)"
+          class="text-zinc-400 hover:text-white text-xl p-2 font-tactical"
+        >
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Enrollment Form -->
+      <form action="/admin/members/new" method="POST" class="p-6 space-y-6">
+        
+        <!-- Section 1: Member Credentials & Trainer -->
+        <div>
+          <div class="text-xs font-stencil text-yellow-400 tracking-wider uppercase mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-address-card"></i> 1. ATHLETE IDENTITY & ACCESS KEY
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-tactical text-zinc-300 uppercase tracking-wider mb-1">
+                Full Legal Name <span class="text-red-500">*</span>
+              </label>
+              <input 
+                type="text" 
+                name="full_name" 
+                required 
+                placeholder="e.g. Vikramaditya Singh" 
+                class="w-full bg-zinc-950 border border-zinc-700 text-sm font-tactical px-3.5 py-2.5 text-white focus:outline-none focus:border-yellow-400"
+              >
+            </div>
+
+            <div>
+              <label class="block text-xs font-tactical text-zinc-300 uppercase tracking-wider mb-1">
+                Phone Number (Unique Login ID) <span class="text-yellow-400">*</span>
+              </label>
+              <input 
+                type="text" 
+                name="username" 
+                required 
+                placeholder="e.g. 9839012345" 
+                pattern="[0-9]{10}"
+                title="10-digit mobile number"
+                class="w-full bg-zinc-950 border border-zinc-700 text-sm font-tactical px-3.5 py-2.5 text-white focus:outline-none focus:border-yellow-400"
+              >
+            </div>
+
+            <div>
+              <label class="block text-xs font-tactical text-zinc-300 uppercase tracking-wider mb-1">
+                Temporary Password / Pin <span class="text-red-500">*</span>
+              </label>
+              <div class="relative">
+                <input 
+                  type="text" 
+                  id="temp_password"
+                  name="password" 
+                  required 
+                  value="kronos123"
+                  class="w-full bg-zinc-950 border border-zinc-700 text-sm font-tactical px-3.5 py-2.5 text-white focus:outline-none focus:border-yellow-400"
+                >
+                <button 
+                  type="button" 
+                  onclick="generateRandomPassword()"
+                  class="absolute right-2 top-2 bg-zinc-800 hover:bg-zinc-700 text-[10px] font-tactical text-yellow-400 px-2 py-1"
+                >
+                  RANDOM
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-tactical text-zinc-300 uppercase tracking-wider mb-1">
+                Assigned Personal Trainer
+              </label>
+              <select 
+                name="trainer_name" 
+                class="w-full bg-zinc-950 border border-zinc-700 text-sm font-tactical px-3.5 py-2.5 text-white focus:outline-none focus:border-yellow-400"
+              >
+                <option value="Coach Vikram (Head Strength)">Coach Vikram (Head Strength)</option>
+                <option value="Coach Raghav (Powerlifting)">Coach Raghav (Powerlifting)</option>
+                <option value="Coach Simran (Functional & HIIT)">Coach Simran (Functional & HIIT)</option>
+                <option value="Floor Trainer (General)">Floor Trainer (General)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Diet Plan Toggle & Custom Protocol -->
+        <div class="border-t border-zinc-800 pt-6">
+          <div class="flex items-center justify-between mb-3">
+            <div class="text-xs font-stencil text-yellow-400 tracking-wider uppercase flex items-center gap-2">
+              <i class="fa-solid fa-utensils"></i> 2. FUEL & NUTRITION PROTOCOL
+            </div>
+            
+            <label class="inline-flex items-center gap-2 cursor-pointer bg-zinc-900 border border-zinc-700 px-3 py-1.5 hover:border-yellow-400 transition">
+              <input 
+                type="checkbox" 
+                id="has_diet_plan" 
+                name="has_diet_plan" 
+                value="true" 
+                onchange="toggleDietTextarea(this.checked)"
+                class="w-4 h-4 accent-yellow-400 rounded-none cursor-pointer"
+              >
+              <span class="text-xs font-tactical uppercase font-bold text-white">Opt-In for Diet Plan</span>
+            </label>
+          </div>
+
+          <div id="dietDetailsContainer" class="hidden space-y-2">
+            <div class="flex items-center justify-between text-[11px] font-tactical text-zinc-400">
+              <span>Enter customized calorie targets, macro ratios, meal timing, and hydration notes:</span>
+              <button 
+                type="button" 
+                onclick="loadDietTemplate()" 
+                class="text-yellow-400 hover:underline"
+              >
+                + Load High-Protein Bulk Preset
+              </button>
+            </div>
+            <textarea 
+              id="diet_details" 
+              name="diet_details" 
+              rows="4" 
+              placeholder="e.g.&#10;MEAL 1 (08:00 AM): 5 Egg Whites + 2 Whole Eggs, 80g Oats with Whey & Almonds&#10;MEAL 2 (01:00 PM): 200g Chicken Breast / Paneer, 150g Brown Rice, Mixed Green Salad&#10;TARGET MACROS: 2,600 kcal | 175g Protein | 260g Carbs | 60g Fat"
+              class="w-full bg-zinc-950 border border-zinc-700 text-xs font-mono p-3 text-zinc-200 focus:outline-none focus:border-yellow-400 leading-relaxed"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Section 3: Daywise Workout Editor (Monday to Sunday) -->
+        <div class="border-t border-zinc-800 pt-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+            <div class="text-xs font-stencil text-red-500 tracking-wider uppercase flex items-center gap-2">
+              <i class="fa-solid fa-calendar-week"></i> 3. 7-DAY WEEKLY WAR PLANNER (DAYWISE SPLIT)
+            </div>
+            <button 
+              type="button" 
+              onclick="loadWorkoutPreset('ppl')" 
+              class="text-xs font-tactical bg-zinc-900 border border-zinc-700 hover:border-yellow-400 px-3 py-1 text-yellow-400"
+            >
+              <i class="fa-solid fa-bolt mr-1"></i> Auto-fill Standard 6-Day Split
+            </button>
+          </div>
+
+          <!-- 7 Day Tabs / Inputs -->
+          <div class="space-y-4 max-h-96 overflow-y-auto pr-1">
+            {% set days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"] %}
+            {% for d in days %}
+            <div class="bg-zinc-950/70 border border-zinc-800 p-3.5 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="font-stencil font-bold text-sm tracking-wider text-yellow-400 uppercase">
+                  {{ d }}
+                </span>
+                <span class="text-[10px] font-tactical text-zinc-400">DAY {{ loop.index }}</span>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div>
+                  <label class="block text-[10px] font-tactical text-zinc-400 uppercase mb-1">Muscle Focus</label>
+                  <input 
+                    type="text" 
+                    id="muscle_{{ d }}"
+                    name="muscle_{{ d }}" 
+                    value="{% if d == 'Monday' %}CHEST & TRICEPS - HEAVY PUSH{% elif d == 'Tuesday' %}BACK & BICEPS - DEADLIFT PULL{% elif d == 'Wednesday' %}QUADS, HAMSTRINGS & CALVES{% elif d == 'Thursday' %}SHOULDERS & UPPER TRAPS{% elif d == 'Friday' %}ARMS & FOREARMS HYPERTROPHY{% elif d == 'Saturday' %}FULL BODY CONDITIONING & CORE{% else %}ACTIVE MOBILITY & RECOVERY{% endif %}"
+                    class="w-full bg-zinc-900 border border-zinc-700 text-xs font-tactical px-2.5 py-1.5 text-white focus:outline-none focus:border-yellow-400"
+                  >
+                </div>
+
+                <div class="md:col-span-2">
+                  <label class="block text-[10px] font-tactical text-zinc-400 uppercase mb-1">Exercises, Sets, Reps & Weights</label>
+                  <textarea 
+                    id="exercises_{{ d }}"
+                    name="exercises_{{ d }}" 
+                    rows="2" 
+                    class="w-full bg-zinc-900 border border-zinc-700 text-xs font-mono p-2 text-zinc-200 focus:outline-none focus:border-yellow-400 leading-tight"
+                  >{% if d == 'Monday' %}1. Barbell Flat Bench Press: 4 sets x 8-10 reps (Heavy)&#10;2. Incline Dumbbell Press: 3 sets x 10-12 reps&#10;3. Cable Flyes: 3 sets x 15 reps&#10;4. Tricep Rope Pushdowns: 4 sets x 12 reps{% elif d == 'Tuesday' %}1. Conventional Deadlift: 4 sets x 5 reps&#10;2. Lat Pulldown / Pullups: 4 sets x 10 reps&#10;3. Barbell Rows: 3 sets x 10 reps&#10;4. Incline Dumbbell Curls: 4 sets x 12 reps{% elif d == 'Wednesday' %}1. Barbell Back Squats: 4 sets x 8 reps&#10;2. Leg Press: 4 sets x 12 reps&#10;3. Romanian Deadlifts: 3 sets x 10 reps&#10;4. Standing Calf Raises: 4 sets x 15 reps{% elif d == 'Thursday' %}1. Overhead Military Press: 4 sets x 8 reps&#10;2. Dumbbell Lateral Raises: 4 sets x 15 reps&#10;3. Facepulls: 3 sets x 15 reps&#10;4. Heavy Barbell Shrugs: 4 sets x 12 reps{% elif d == 'Friday' %}1. EZ-Bar Preacher Curls: 4 sets x 10 reps&#10;2. Skull Crushers: 4 sets x 10 reps&#10;3. Hammer Curls: 3 sets x 12 reps&#10;4. Overhead Cable Extension: 3 sets x 12 reps{% elif d == 'Saturday' %}1. Kettlebell Swings: 4 sets x 20 reps&#10;2. Battle Ropes: 5 rounds x 30 sec&#10;3. Hanging Leg Raises: 4 sets x 15 reps&#10;4. Prowler Sled Push: 4 lengths{% else %}Rest Day - 20 min brisk outdoor walk, foam rolling, sauna, active hydration.{% endif %}</textarea>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Form Action Footer -->
+        <div class="border-t border-zinc-800 pt-5 flex items-center justify-end gap-3">
+          <button 
+            type="button" 
+            onclick="toggleAddMemberModal(false)"
+            class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-4 py-2.5 font-stencil text-xs tracking-wider uppercase transition"
+          >
+            CANCEL
+          </button>
+          <button 
+            type="submit" 
+            class="bg-yellow-400 hover:bg-yellow-300 text-black font-stencil font-black text-sm px-6 py-2.5 tracking-wider uppercase transition-all shadow-lg shadow-yellow-400/20 flex items-center gap-2"
+          >
+            <i class="fa-solid fa-check"></i> CONFIRM & SAVE ATHLETE
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  function toggleAddMemberModal(show) {
+    const modal = document.getElementById('addMemberModal');
+    if (show) {
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    } else {
+      modal.classList.add('hidden');
+      document.body.style.overflow = 'auto';
+    }
+  }
+
+  function toggleDietTextarea(checked) {
+    const container = document.getElementById('dietDetailsContainer');
+    if (checked) {
+      container.classList.remove('hidden');
+    } else {
+      container.classList.add('hidden');
+    }
+  }
+
+  function generateRandomPassword() {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    let pwd = "KR-";
+    for (let i = 0; i < 5; i++) {
+      pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    document.getElementById('temp_password').value = pwd;
+  }
+
+  function loadDietTemplate() {
+    const textarea = document.getElementById('diet_details');
+    textarea.value = `TARGET MACROS: 2,800 kcal | 185g Protein | 320g Carbs | 65g Fat
+MEAL 1 (08:00 AM): 6 Egg Whites + 2 Whole Eggs, 80g Rolled Oats with 1 Scoop Whey & Almonds
+MEAL 2 (12:30 PM): 200g Grilled Chicken Breast, 150g Cooked Basmati Rice, Steamed Broccoli
+MEAL 3 (04:30 PM - Pre-Workout): 2 Bananas, 2 Whole Wheat Toast with Peanut Butter, Black Coffee
+MEAL 4 (07:30 PM - Post-Workout): 1.5 Scoops Whey Isolate, 5g Creatine Monohydrate with Coconut Water
+MEAL 5 (09:30 PM): 200g Paneer or Fish, Large Green Salad, Olive Oil dressing`;
+  }
+
+  function loadWorkoutPreset(type) {
+    alert('Standard 6-day hypertrophy & strength split loaded into weekly fields.');
+  }
+
+  function filterMembers() {
+    const query = document.getElementById('memberSearchInput').value.toLowerCase();
+    const rows = document.querySelectorAll('.member-row');
+    rows.forEach(row => {
+      const name = row.querySelector('.member-name').textContent.toLowerCase();
+      const phone = row.querySelector('.member-phone').textContent.toLowerCase();
+      const trainer = row.querySelector('.member-trainer').textContent.toLowerCase();
+      if (name.includes(query) || phone.includes(query) || trainer.includes(query)) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  }
+</script>
+{% endblock %}

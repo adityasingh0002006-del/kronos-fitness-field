@@ -1,0 +1,249 @@
+{% extends "base.html" %}
+
+{% block title %}{{ member.full_name }} // WAR ROOM // KRONOS FITNESS FIELD{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+  <!-- War Room Header Banner -->
+  <div class="gritty-card rivet-corner p-6 sm:p-8 border-2 border-zinc-800 mb-8 relative overflow-hidden">
+    <div class="h-1.5 w-full hazard-stripe absolute top-0 left-0"></div>
+
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+      <div>
+        <div class="flex items-center gap-3 mb-2">
+          <span class="bg-yellow-400 text-black text-xs font-black font-stencil px-2.5 py-1 tracking-wider">
+            ATHLETE WAR ROOM
+          </span>
+          <span class="text-zinc-500 font-tactical text-xs">
+            ID: <span class="text-yellow-400 font-bold font-mono">{{ member.username }}</span>
+          </span>
+          <span class="text-zinc-500 hidden sm:inline">&bull;</span>
+          <span class="text-zinc-400 font-tactical text-xs hidden sm:inline">
+            <i class="fa-solid fa-location-dot text-yellow-400 mr-1"></i> SANIGAWAN RD, KANPUR
+          </span>
+        </div>
+
+        <h1 class="text-3xl sm:text-5xl font-stencil font-black text-white tracking-wider">
+          WELCOME BACK, <span class="text-yellow-400">{{ member.full_name }}</span>
+        </h1>
+        <p class="text-sm font-tactical text-zinc-400 mt-1">
+          EXECUTE THE PROTOCOL. CONSISTENCY IS SUPREMACY.
+        </p>
+      </div>
+
+      <!-- Quick Action Strip -->
+      <div class="flex items-center gap-3 flex-wrap">
+        <div class="bg-zinc-900 border border-zinc-800 px-4 py-2 text-right">
+          <div class="text-[10px] font-tactical text-zinc-400 uppercase tracking-widest">TODAY'S MISSION</div>
+          <div class="text-yellow-400 font-stencil font-bold text-lg leading-tight">
+            {{ today_name }} // {{ today_workout.muscle_group if today_workout else 'REST' }}
+          </div>
+        </div>
+        <a href="/logout" class="bg-zinc-850 hover:bg-red-950/50 hover:border-red-600/60 text-zinc-300 hover:text-red-400 border border-zinc-700 px-4 py-3 text-xs font-stencil tracking-wider transition flex items-center gap-2">
+          <i class="fa-solid fa-power-off"></i> DISENGAGE
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hero Stat Cards Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+    
+    <!-- Card 1: Full Name & Member Info -->
+    <div class="gritty-card p-5 border-l-4 border-l-yellow-400">
+      <div class="flex items-center justify-between text-zinc-400 text-xs font-tactical uppercase tracking-wider mb-2">
+        <span><i class="fa-solid fa-user-ninja text-yellow-400 mr-1.5"></i> ATHLETE PROFILE</span>
+        <span class="text-[10px] text-zinc-400">ACTIVE</span>
+      </div>
+      <div class="text-2xl font-stencil font-bold text-white mb-1">
+        {{ member.full_name }}
+      </div>
+      <div class="text-xs font-tactical text-zinc-400 flex items-center gap-3">
+        <span><i class="fa-solid fa-phone text-yellow-400/80 mr-1"></i> {{ member.username }}</span>
+        <span>&bull;</span>
+        <span>Enrolled: {{ member.created_at.strftime('%b %Y') if member.created_at else '2026' }}</span>
+      </div>
+    </div>
+
+    <!-- Card 2: Assigned Trainer -->
+    <div class="gritty-card p-5 border-l-4 border-l-red-600">
+      <div class="flex items-center justify-between text-zinc-400 text-xs font-tactical uppercase tracking-wider mb-2">
+        <span><i class="fa-solid fa-dumbbell text-red-500 mr-1.5"></i> COMMANDING COACH</span>
+        <span class="text-[10px] text-red-400 font-mono">ASSIGNED</span>
+      </div>
+      <div class="text-2xl font-stencil font-bold text-white mb-1">
+        {{ member.trainer_name or 'Floor Trainer' }}
+      </div>
+      <div class="text-xs font-tactical text-zinc-400 flex items-center gap-1.5">
+        <i class="fa-solid fa-shield text-red-500/80"></i> KRONOS Sanigawan Rd Performance Staff
+      </div>
+    </div>
+
+    <!-- Card 3: Diet Status Badge -->
+    <div class="gritty-card p-5 border-l-4 {% if member.has_diet_plan %}border-l-yellow-400{% else %}border-l-zinc-600{% endif %}">
+      <div class="flex items-center justify-between text-zinc-400 text-xs font-tactical uppercase tracking-wider mb-2">
+        <span><i class="fa-solid fa-utensils text-yellow-400 mr-1.5"></i> NUTRITION PROTOCOL</span>
+        <span class="text-[10px] font-bold">STATUS</span>
+      </div>
+      <div class="flex items-center gap-3 mb-1">
+        {% if member.has_diet_plan %}
+          <div class="text-2xl font-stencil font-bold text-yellow-400 flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-yellow-400 animate-pulse"></span>
+            ACTIVE PROTOCOL
+          </div>
+        {% else %}
+          <div class="text-2xl font-stencil font-bold text-zinc-400 flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-zinc-600"></span>
+            NOT OPTED
+          </div>
+        {% endif %}
+      </div>
+      <div class="text-xs font-tactical text-zinc-400">
+        {% if member.has_diet_plan %}
+          Target macros & meal timings calibrated by Coach
+        {% else %}
+          Standard workout only (No diet tracking enabled)
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Fuel & Nutrition Section (Displays if Opted In, or Sleek Prompt if Not) -->
+  <div class="mb-12">
+    <div class="flex items-center justify-between mb-4 border-b border-zinc-800 pb-3">
+      <div class="flex items-center gap-3">
+        <span class="w-3 h-6 bg-yellow-400"></span>
+        <h2 class="text-2xl font-stencil font-bold tracking-wider text-white">
+          FUEL & NUTRITION PROTOCOL
+        </h2>
+      </div>
+      <span class="text-xs font-tactical text-zinc-400 uppercase tracking-widest hidden sm:inline">
+        [ TARGET INTAKE // ANABOLIC WAR FUEL ]
+      </span>
+    </div>
+
+    {% if member.has_diet_plan and member.diet_details %}
+      <div class="gritty-card rivet-corner p-6 sm:p-8 border border-yellow-400/40 bg-gradient-to-br from-[#121214] via-[#161619] to-[#121214] relative">
+        <div class="flex flex-col md:flex-row md:items-start justify-between gap-6">
+          <div class="flex-grow">
+            <div class="inline-flex items-center gap-2 bg-yellow-400/10 border border-yellow-400/30 text-yellow-400 text-xs font-tactical px-3 py-1 mb-4 uppercase tracking-wider font-bold">
+              <i class="fa-solid fa-fire-flame-curved"></i> CUSTOMIZED ATHLETE NUTRITION
+            </div>
+            
+            <div class="prose prose-invert max-w-none text-zinc-200 font-sans text-sm sm:text-base leading-relaxed whitespace-pre-line bg-black/40 p-5 border border-zinc-800/80 rounded-none font-mono">
+              {{ member.diet_details }}
+            </div>
+          </div>
+
+          <div class="md:w-72 flex-shrink-0 bg-zinc-950/80 border border-zinc-800 p-4 space-y-4">
+            <div class="text-xs font-stencil text-yellow-400 tracking-wider uppercase border-b border-zinc-800 pb-2">
+              <i class="fa-solid fa-list-check mr-1.5"></i> PROTOCOL RULES
+            </div>
+            <ul class="text-xs font-tactical text-zinc-400 space-y-2.5">
+              <li class="flex items-start gap-2">
+                <i class="fa-solid fa-check text-yellow-400 mt-0.5"></i>
+                <span>Weigh meals pre-cooked when measuring raw carbs & proteins.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <i class="fa-solid fa-check text-yellow-400 mt-0.5"></i>
+                <span>Minimum 4–5 Liters water daily during heavy training blocks.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <i class="fa-solid fa-check text-yellow-400 mt-0.5"></i>
+                <span>Pre-workout meal 90 mins prior; post-workout shake within 45 mins.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div class="gritty-card p-6 sm:p-8 text-center border-dashed border-2 border-zinc-800">
+        <div class="w-12 h-12 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-500 flex items-center justify-center mx-auto mb-3 text-lg">
+          <i class="fa-solid fa-lock"></i>
+        </div>
+        <h3 class="text-xl font-stencil text-zinc-300">NO ACTIVE NUTRITION TARGETS ASSIGNED</h3>
+        <p class="text-xs font-tactical text-zinc-400 max-w-md mx-auto mt-1">
+          You have not opted for a customized nutrition & macro targets split. Inquire with Coach {{ member.trainer_name }} at the front desk to unlock your diet protocol.
+        </p>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Weekly War Schedule (Daywise Split: Monday–Sunday) -->
+  <div>
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 border-b border-zinc-800 pb-3">
+      <div class="flex items-center gap-3">
+        <span class="w-3 h-6 bg-red-600"></span>
+        <h2 class="text-2xl font-stencil font-bold tracking-wider text-white">
+          WEEKLY WAR SCHEDULE // 7-DAY SPLIT
+        </h2>
+      </div>
+      <div class="text-xs font-tactical text-zinc-400 flex items-center gap-4">
+        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-yellow-400"></span> TODAY'S TARGET</span>
+        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-zinc-700"></span> UPCOMING / COMPLETED</span>
+      </div>
+    </div>
+
+    <!-- 7 Day Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+      {% for day in days_order %}
+        {% set plan = plans_dict.get(day) %}
+        {% set is_today = (day == today_name) %}
+        
+        <div class="gritty-card rivet-corner flex flex-col justify-between transition-all duration-200 {% if is_today %}gritty-card-active ring-1 ring-yellow-400 transform -translate-y-1{% endif %}">
+          
+          <!-- Top Card Header -->
+          <div>
+            <div class="p-4 border-b border-zinc-800 {% if is_today %}bg-yellow-400/10{% else %}bg-zinc-950/60{% endif %} flex items-center justify-between">
+              <div>
+                <span class="text-xs font-tactical font-bold uppercase tracking-widest {% if is_today %}text-yellow-400{% else %}text-zinc-400{% endif %}">
+                  {{ day }}
+                </span>
+                {% if is_today %}
+                  <span class="ml-2 bg-yellow-400 text-black text-[10px] font-black font-stencil px-1.5 py-0.5 tracking-wider">
+                    TODAY
+                  </span>
+                {% endif %}
+              </div>
+              <span class="text-xs text-zinc-400 font-mono">DAY {{ loop.index }}/7</span>
+            </div>
+
+            <!-- Target Muscle Group -->
+            <div class="p-4 border-b border-zinc-900 bg-black/40">
+              <div class="text-[10px] font-tactical text-zinc-400 uppercase tracking-wider">PRIMARY TARGET</div>
+              <div class="font-stencil font-bold text-lg {% if is_today %}text-yellow-400{% else %}text-white{% endif %} tracking-wide mt-0.5">
+                {{ plan.muscle_group if plan and plan.muscle_group else 'REST & RECOVERY' }}
+              </div>
+            </div>
+
+            <!-- Exercise Breakdown -->
+            <div class="p-4">
+              <div class="text-[10px] font-tactical text-zinc-400 uppercase tracking-wider mb-2">EXERCISES & SETS</div>
+              <div class="text-xs text-zinc-300 font-tactical space-y-1.5 whitespace-pre-line leading-relaxed">
+                {% if plan and plan.exercise_list %}
+                  {{ plan.exercise_list }}
+                {% else %}
+                  <span class="text-zinc-400 italic">No exercises scheduled. Active rest or cardio mobility.</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Footer Status -->
+          <div class="p-3 bg-zinc-950/90 border-t border-zinc-900 flex items-center justify-between text-[11px] font-tactical">
+            <span class="text-zinc-400">Coach Approved</span>
+            <span class="{% if is_today %}text-yellow-400 font-bold{% else %}text-zinc-400{% endif %}">
+              <i class="fa-solid fa-bullseye mr-1"></i> {{ 'READY TO HIT' if is_today else 'PROGRAMMED' }}
+            </span>
+          </div>
+
+        </div>
+      {% endfor %}
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}
