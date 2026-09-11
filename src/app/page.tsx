@@ -10,8 +10,13 @@ import LocationCard from "@/components/LocationCard";
 import Pricing from "@/components/Pricing";
 import Footer from "@/components/Footer";
 import TrialModal from "@/components/TrialModal";
+import MemberLoginView from "@/components/MemberLoginView";
+import MemberDashboardView from "@/components/MemberDashboardView";
 
 export default function Home() {
+  const [currentView, setCurrentView] = useState<
+    "landing" | "member_login" | "member_dashboard"
+  >("landing");
   const [trialOpen, setTrialOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string>("TITAN POWERLIFTING");
 
@@ -26,10 +31,33 @@ export default function Home() {
     setTrialOpen(false);
   };
 
+  // Dedicated View Toggle: Member Login (resolves preview iframe routing crash)
+  if (currentView === "member_login") {
+    return (
+      <MemberLoginView
+        onSuccess={() => setCurrentView("member_dashboard")}
+        onBackToBase={() => setCurrentView("landing")}
+      />
+    );
+  }
+
+  // Dedicated View Toggle: Member Dashboard (Alex Mercer, Coach Vikram, 7-Day Split)
+  if (currentView === "member_dashboard") {
+    return (
+      <MemberDashboardView
+        onBackToBase={() => setCurrentView("landing")}
+      />
+    );
+  }
+
+  // Default Landing Page: 3D Canvas, Hero, Programs, Facilities, Radar Map & Footer
   return (
     <div className="min-h-screen flex flex-col bg-[#0a0a0a] text-[#f3f4f6]">
       {/* Navigation */}
-      <Navbar onOpenTrial={() => handleOpenTrial("JOIN THE CULT TRIAL")} />
+      <Navbar
+        onOpenTrial={() => handleOpenTrial("JOIN THE CULT TRIAL")}
+        onOpenMemberLogin={() => setCurrentView("member_login")}
+      />
 
       {/* Main Sections */}
       <main className="flex-1">

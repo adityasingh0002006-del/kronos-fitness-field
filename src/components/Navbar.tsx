@@ -18,9 +18,10 @@ import {
 
 interface NavbarProps {
   onOpenTrial: () => void;
+  onOpenMemberLogin?: () => void;
 }
 
-export default function Navbar({ onOpenTrial }: NavbarProps) {
+export default function Navbar({ onOpenTrial, onOpenMemberLogin }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -210,10 +211,17 @@ export default function Navbar({ onOpenTrial }: NavbarProps) {
                 {/* Dropdown Menu Choices */}
                 <div className="p-3 space-y-2.5">
                   {/* Choice A: "Member" (Dumbbell icon, hazard yellow accent) */}
-                  <a
-                    href="/login"
-                    onClick={() => setDropdownOpen(false)}
-                    className="group relative block p-3.5 bg-zinc-950/90 hover:bg-zinc-900 border border-zinc-800 hover:border-[#facc15] transition-all duration-200 shadow-sm"
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDropdownOpen(false);
+                      if (onOpenMemberLogin) {
+                        onOpenMemberLogin();
+                      } else {
+                        window.location.href = "/login";
+                      }
+                    }}
+                    className="w-full text-left group relative block p-3.5 bg-zinc-950/90 hover:bg-zinc-900 border border-zinc-800 hover:border-[#facc15] transition-all duration-200 shadow-sm cursor-pointer"
                     id="portal-link-member"
                   >
                     <div className="flex items-start gap-3.5">
@@ -238,7 +246,7 @@ export default function Navbar({ onOpenTrial }: NavbarProps) {
 
                       <ArrowRight className="w-4 h-4 text-zinc-600 group-hover:text-[#facc15] group-hover:translate-x-1 transition-all shrink-0 mt-2" />
                     </div>
-                  </a>
+                  </button>
 
                   {/* Choice B: "Owner / Staff" (Shield icon, crimson red accent) */}
                   <a
@@ -325,17 +333,24 @@ export default function Navbar({ onOpenTrial }: NavbarProps) {
               <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 px-1">
                 // DIRECT PORTAL ENTRY
               </div>
-              <a
-                href="/login"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full py-2.5 px-3 bg-[#131317] border border-[#facc15]/40 text-[#facc15] hover:bg-[#facc15] hover:text-black font-bebas text-lg tracking-wider transition-all flex items-center justify-between"
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  if (onOpenMemberLogin) {
+                    onOpenMemberLogin();
+                  } else {
+                    window.location.href = "/login";
+                  }
+                }}
+                className="w-full py-2.5 px-3 bg-[#131317] border border-[#facc15]/40 text-[#facc15] hover:bg-[#facc15] hover:text-black font-bebas text-lg tracking-wider transition-all flex items-center justify-between cursor-pointer"
               >
                 <span className="flex items-center gap-2">
                   <Dumbbell className="w-4 h-4" />
                   <span>MEMBER WAR ROOM</span>
                 </span>
                 <span className="text-xs font-mono">&rarr;</span>
-              </a>
+              </button>
 
               <a
                 href="/admin/login"
