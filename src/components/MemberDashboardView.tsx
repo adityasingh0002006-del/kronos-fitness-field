@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useSyncExternalStore } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   Flame,
@@ -27,11 +27,6 @@ import {
   DaySplit,
 } from "@/lib/kronos-store";
 
-function subscribe(callback: () => void) {
-  window.addEventListener("storage", callback);
-  return () => window.removeEventListener("storage", callback);
-}
-
 function getAthleteSnapshot(): Member {
   if (typeof window === "undefined") return DEMO_MEMBERS[0];
   try {
@@ -49,9 +44,21 @@ interface MemberDashboardViewProps {
 
 export default function MemberDashboardView({ onBackToBase }: MemberDashboardViewProps) {
   const router = useRouter();
-  const member = useSyncExternalStore(subscribe, getAthleteSnapshot, () => DEMO_MEMBERS[0]);
+  const [member, setMember] = useState<Member>(() => getAthleteSnapshot());
   const [selectedDayIndex, setSelectedDayIndex] = useState(0); // 0 = Monday
   const [completedExercises, setCompletedExercises] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    const syncMember = () => setMember(getAthleteSnapshot());
+    syncMember();
+
+    if (typeof window === "undefined") return;
+    window.addEventListener("storage", syncMember);
+
+    return () => {
+      window.removeEventListener("storage", syncMember);
+    };
+  }, []);
 
   const handleBack = () => {
     if (onBackToBase) {

@@ -56,6 +56,8 @@ export default function MemberLoginView({
         setLoading(false);
         if (onSuccess) {
           onSuccess();
+        } else if (typeof window !== "undefined") {
+          window.location.href = "/dashboard";
         } else {
           router.push("/dashboard");
         }

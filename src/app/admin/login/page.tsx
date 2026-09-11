@@ -38,7 +38,11 @@ export default function AdminLoginPage() {
           localStorage.setItem("kronos_staff_auth", "true");
           localStorage.setItem("kronos_staff_user", "Command Staff // Admin");
         }
-        router.push("/admin");
+        if (typeof window !== "undefined") {
+          window.location.href = "/admin";
+        } else {
+          router.push("/admin");
+        }
       } else {
         setError("Access Denied. Unauthorized Personnel.");
         setLoading(false);
