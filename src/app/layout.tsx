@@ -19,7 +19,7 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   title: "KRONOS FITNESS FIELD | Kanpur's Premier Raw Iron Battleground",
   description:
-    "No excuses. Raw iron, hardcore discipline, and relentless strength at KRONOS Fitness Field, 270 Bhawa Nagar, Sanigawan Rd, Kanpur. Open 5:00 AM - 10:00 PM.",
+    "No excuses. Raw iron, hardcore discipline, and relentless strength at KRONOS Fitness Field, 270 Bhaba Nagar, Sanigawan Rd, Kanpur. Open 5:00 AM - 10:00 PM.",
   keywords: [
     "KRONOS Fitness Field",
     "Kanpur Gym",

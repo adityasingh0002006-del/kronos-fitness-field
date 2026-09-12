@@ -17,9 +17,9 @@ import {
 export default function LocationCard() {
   const [copied, setCopied] = useState(false);
 
-  const address = "270 Bhawa Nagar, Sanigawan Rd, near Bank of Baroda ATM, Kanpur, Uttar Pradesh 208007";
+  const address = "270 Bhaba Nagar, Sanigawan Rd, near Bank of Baroda ATM, Kanpur, Uttar Pradesh 208007";
   const phone = "+91 95806 50262";
-  const googleMapsUrl = "https://www.google.com/maps/search/?api=1&query=270+Bhawa+Nagar+Sanigawan+Rd+near+Bank+of+Baroda+ATM+Kanpur";
+  const googleMapsUrl = "https://www.google.com/maps/search/?api=1&query=270+Bhaba+Nagar+Sanigawan+Rd+near+Bank+of+Baroda+ATM+Kanpur";
   const whatsappUrl = "https://wa.me/919580650262?text=Hello%20KRONOS%20Fitness%20Field!%20I%20want%20to%20inquire%20about%20memberships%20and%20claim%20my%20free%20trial%20session.";
 
   const handleCopyAddress = () => {
@@ -174,7 +174,7 @@ export default function LocationCard() {
             <div className="relative w-full h-[360px] sm:h-[420px] bg-[#0c0c0f]">
               <iframe
                 title="KRONOS Fitness Field Location Map"
-                src="https://maps.google.com/maps?q=270+Bhawa+Nagar,+Sanigawan+Rd,+near+Bank+of+Baroda+ATM,+Kanpur&t=&z=16&ie=UTF8&iwloc=&output=embed"
+                src="https://maps.google.com/maps?q=270+Bhaba+Nagar,+Sanigawan+Rd,+near+Bank+of+Baroda+ATM,+Kanpur&t=&z=16&ie=UTF8&iwloc=&output=embed"
                 width="100%"
                 height="100%"
                 style={{ border: 0, filter: "invert(92%) hue-rotate(180deg) contrast(1.15)" }}

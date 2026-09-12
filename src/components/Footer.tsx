@@ -75,7 +75,7 @@ export default function Footer() {
             <ul className="space-y-3 text-xs font-mono">
               <li className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-[#ef4444] shrink-0 mt-0.5" />
-                <span>270 Bhawa Nagar, Sanigawan Rd, near Bank of Baroda ATM, Kanpur, UP</span>
+                <span>270 Bhaba Nagar, Sanigawan Rd, near Bank of Baroda ATM, Kanpur, UP</span>
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-[#facc15] shrink-0" />

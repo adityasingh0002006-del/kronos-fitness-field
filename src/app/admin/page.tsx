@@ -19,8 +19,11 @@ import {
 } from "lucide-react";
 import {
   Member,
+  TrialRequest,
   getMembers,
+  getTrialRequests,
   saveMembers,
+  saveTrialRequests,
   INITIAL_SPLITS,
   INITIAL_MEALS,
   DEMO_MEMBERS,
@@ -35,6 +38,7 @@ export default function AdminDashboardPage() {
     }
     return DEMO_MEMBERS;
   });
+  const [trialRequests, setTrialRequests] = useState<TrialRequest[]>(() => getTrialRequests());
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<Member | null>(null);
@@ -79,6 +83,15 @@ export default function AdminDashboardPage() {
       saveMembers(updated);
       showToast(`Athlete "${name}" expelled from active roster.`);
     }
+  };
+
+  const handleTrialRequestDecision = (requestId: string, status: "Allowed" | "Denied") => {
+    const updated = trialRequests.map((request) =>
+      request.id === requestId ? { ...request, status } : request
+    );
+    setTrialRequests(updated);
+    saveTrialRequests(updated);
+    showToast(`Day pass request ${status.toLowerCase()} successfully.`);
   };
 
   const handleCreateMember = (e: React.FormEvent) => {
@@ -312,6 +325,90 @@ export default function AdminDashboardPage() {
             <UserPlus className="w-5 h-5" />
             <span>ADD NEW MEMBER</span>
           </button>
+        </div>
+
+        {/* ONE-DAY PASS REQUESTS */}
+        <div className="bg-[#0c0c10] border-2 border-[#facc15]/50 clip-chamfer overflow-hidden shadow-2xl">
+          <div className="p-4 sm:p-5 bg-[#121217] border-b border-zinc-800 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Calendar className="w-5 h-5 text-[#facc15]" />
+              <h3 className="font-bebas text-2xl tracking-wider text-white">1-DAY PASS REQUESTS</h3>
+            </div>
+            <span className="text-xs font-mono text-zinc-400">
+              {trialRequests.filter((request) => request.status === "Pending").length} PENDING REVIEW
+            </span>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left font-mono text-xs">
+              <thead>
+                <tr className="bg-[#09090c] border-b border-zinc-800 text-zinc-400 text-[11px] uppercase tracking-wider">
+                  <th className="py-3.5 px-4 font-bold">Applicant</th>
+                  <th className="py-3.5 px-4 font-bold">Phone</th>
+                  <th className="py-3.5 px-4 font-bold">Preferred Slot</th>
+                  <th className="py-3.5 px-4 font-bold">Focus</th>
+                  <th className="py-3.5 px-4 font-bold">Status</th>
+                  <th className="py-3.5 px-4 font-bold text-right">Decision</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-800/80">
+                {trialRequests.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="py-8 text-center text-zinc-500 font-mono">
+                      NO DAY PASS REQUESTS YET
+                    </td>
+                  </tr>
+                ) : (
+                  trialRequests.map((request) => (
+                    <tr key={request.id} className="hover:bg-[#13131a] transition-colors">
+                      <td className="py-4 px-4">
+                        <div className="font-bebas text-xl text-white">{request.name}</div>
+                        <div className="text-[10px] text-zinc-500">{request.id}</div>
+                      </td>
+                      <td className="py-4 px-4 text-zinc-300">{request.phone}</td>
+                      <td className="py-4 px-4 text-zinc-300">{request.timeSlot}</td>
+                      <td className="py-4 px-4 text-zinc-300">{request.discipline}</td>
+                      <td className="py-4 px-4">
+                        <span
+                          className={`inline-flex items-center gap-1 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider border ${
+                            request.status === "Allowed"
+                              ? "bg-emerald-950/60 border-emerald-500 text-emerald-400"
+                              : request.status === "Denied"
+                              ? "bg-red-950/60 border-red-500 text-red-400"
+                              : "bg-amber-950/60 border-amber-500 text-amber-400"
+                          }`}
+                        >
+                          {request.status}
+                        </span>
+                      </td>
+                      <td className="py-4 px-4 text-right">
+                        {request.status === "Pending" ? (
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => handleTrialRequestDecision(request.id, "Allowed")}
+                              className="px-2.5 py-1.5 bg-emerald-950/60 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-500/50 transition-colors clip-chamfer-sm cursor-pointer"
+                              title="Allow day pass"
+                            >
+                              <CheckCircle2 className="w-3.5 h-3.5 inline mr-1" /> ALLOW
+                            </button>
+                            <button
+                              onClick={() => handleTrialRequestDecision(request.id, "Denied")}
+                              className="px-2.5 py-1.5 bg-red-950/60 hover:bg-red-600 text-red-400 hover:text-white border border-red-500/50 transition-colors clip-chamfer-sm cursor-pointer"
+                              title="Deny day pass"
+                            >
+                              <X className="w-3.5 h-3.5 inline mr-1" /> DENY
+                            </button>
+                          </div>
+                        ) : (
+                          <span className="text-zinc-600">DECISION RECORDED</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* REGISTERED MEMBERS TABLE */}
@@ -794,7 +891,7 @@ export default function AdminDashboardPage() {
 
       {/* FOOTER */}
       <footer className="border-t border-zinc-900 bg-[#08080a] py-4 px-4 text-center font-mono text-xs text-zinc-500 mt-12">
-        KRONOS COMMAND CENTER {"//"} 270 BHAWA NAGAR, SANIGAWAN RD, KANPUR {"//"} SECURE OPERATIONAL DATABASE
+        KRONOS COMMAND CENTER {"//"} 270 BHABA NAGAR, SANIGAWAN RD, KANPUR {"//"} SECURE OPERATIONAL DATABASE
       </footer>
     </div>
   );

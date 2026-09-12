@@ -507,7 +507,7 @@ export default function MemberDashboardView({ onBackToBase }: MemberDashboardVie
 
       {/* FOOTER */}
       <footer className="border-t border-zinc-900 bg-[#08080a] py-4 px-4 text-center font-mono text-xs text-zinc-500 mt-12">
-        KRONOS FITNESS FIELD {"//"} 270 BHAWA NAGAR, SANIGAWAN RD, KANPUR {"//"} +91 95806 50262 {"//"} WAR ROOM ACTIVE
+        KRONOS FITNESS FIELD {"//"} 270 BHABA NAGAR, SANIGAWAN RD, KANPUR {"//"} +91 95806 50262 {"//"} WAR ROOM ACTIVE
       </footer>
     </div>
   );

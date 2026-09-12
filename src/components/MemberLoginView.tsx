@@ -288,7 +288,7 @@ export default function MemberLoginView({
 
       {/* Tactical Footer Strip */}
       <footer className="border-t border-zinc-900 bg-[#08080a] py-3 px-4 text-center font-mono text-[11px] text-zinc-500">
-        KRONOS FITNESS FIELD &copy; 2026 {"//"} 270 BHAWA NAGAR, SANIGAWAN RD, KANPUR {"//"} +91 95806 50262
+        KRONOS FITNESS FIELD &copy; 2026 {"//"} 270 BHABA NAGAR, SANIGAWAN RD, KANPUR {"//"} +91 95806 50262
       </footer>
     </div>
   );

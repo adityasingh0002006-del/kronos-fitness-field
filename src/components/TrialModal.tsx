@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { X, Flame, ShieldAlert, CheckCircle, MessageSquare, Ticket, User, Phone, Clock, Dumbbell } from "lucide-react";
 import confetti from "canvas-confetti";
+import { getTrialRequests, saveTrialRequests } from "@/lib/kronos-store";
 
 interface TrialModalProps {
   isOpen: boolean;
@@ -25,6 +26,18 @@ export default function TrialModal({ isOpen, onClose, defaultPlan }: TrialModalP
     if (!name.trim() || !phone.trim()) return;
 
     const randomId = `KRN-${Math.floor(1000 + Math.random() * 9000)}-${new Date().getFullYear()}`;
+    saveTrialRequests([
+      {
+        id: randomId,
+        name: name.trim(),
+        phone: phone.trim(),
+        timeSlot,
+        discipline,
+        status: "Pending",
+        requestedAt: new Date().toISOString(),
+      },
+      ...getTrialRequests(),
+    ]);
     setRecruitId(randomId);
     setIsSubmitted(true);
 
@@ -172,13 +185,13 @@ export default function TrialModal({ isOpen, onClose, defaultPlan }: TrialModalP
 
             <div>
               <div className="inline-block bg-green-900/30 text-green-400 border border-green-600/40 px-3 py-1 text-xs font-mono uppercase tracking-wider mb-2">
-                ✓ PASS GENERATED SUCCESSFULLY
+                ✓ REQUEST SENT FOR APPROVAL
               </div>
               <h3 className="font-bebas text-4xl text-white tracking-wider uppercase">
                 WELCOME TO THE CULT, {name.toUpperCase()}
               </h3>
               <p className="text-xs font-mono text-zinc-400 mt-1">
-                Your 1-Day Trial Pass is ready for presentation at the front desk.
+                Your 1-Day Trial Pass request is waiting for owner approval.
               </p>
             </div>
 
@@ -206,7 +219,7 @@ export default function TrialModal({ isOpen, onClose, defaultPlan }: TrialModalP
                 </div>
                 <div>
                   <span className="text-zinc-500 text-[10px] block">VENUE</span>
-                  <span className="text-[#facc15]">270 Bhawa Nagar, Kanpur</span>
+                  <span className="text-[#facc15]">270 Bhaba Nagar, Kanpur</span>
                 </div>
               </div>
 

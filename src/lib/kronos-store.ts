@@ -36,6 +36,18 @@ export interface Member {
   meals: Meal[];
 }
 
+export type TrialRequestStatus = "Pending" | "Allowed" | "Denied";
+
+export interface TrialRequest {
+  id: string;
+  name: string;
+  phone: string;
+  timeSlot: string;
+  discipline: string;
+  status: TrialRequestStatus;
+  requestedAt: string;
+}
+
 export const INITIAL_SPLITS: DaySplit[] = [
   {
     day: "Monday",
@@ -215,6 +227,7 @@ export const DEMO_MEMBERS: Member[] = [
 ];
 
 const STORAGE_KEY = "kronos_members_data";
+const TRIAL_REQUESTS_STORAGE_KEY = "kronos_trial_requests";
 
 export function getMembers(): Member[] {
   if (typeof window === "undefined") return DEMO_MEMBERS;
@@ -242,4 +255,23 @@ export function saveMembers(members: Member[]): void {
 export function getMemberByPhone(phone: string): Member | undefined {
   const members = getMembers();
   return members.find((m) => m.phone === phone.trim());
+}
+
+export function getTrialRequests(): TrialRequest[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const data = localStorage.getItem(TRIAL_REQUESTS_STORAGE_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveTrialRequests(requests: TrialRequest[]): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(TRIAL_REQUESTS_STORAGE_KEY, JSON.stringify(requests));
+  } catch (e) {
+    console.error("Failed to save trial requests to localStorage", e);
+  }
 }
