@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import HeroCanvasWrapper from "./canvas/HeroCanvasWrapper";
 import { Flame, Shield, ArrowRight, Crosshair, Dumbbell, MapPin } from "lucide-react";
 
 interface HeroSectionProps {
@@ -80,36 +79,6 @@ export default function HeroSection({ onOpenTrial }: HeroSectionProps) {
             <Shield className="w-3.5 h-3.5 text-[#facc15]" />
             <span>Zero Bullsh*t Policy • 4.6★ Rated on Google • First Session on the House</span>
           </div>
-        </div>
-      </div>
-
-      {/* 3D Viewport Hero Canvas */}
-      <div className="relative w-full max-w-6xl mx-auto px-2 sm:px-6 my-2 z-20">
-        {/* Frame / Stencil Border around 3D viewport */}
-        <div className="relative border-y-2 sm:border-2 border-zinc-800 bg-[#0d0d10]/60 backdrop-blur-sm rounded-none overflow-hidden">
-          {/* Viewport Header Bar */}
-          <div className="bg-[#141418] border-b border-zinc-800 px-4 py-2 flex items-center justify-between text-[11px] font-mono text-zinc-400">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 bg-[#ef4444] rounded-sm" />
-              <span className="w-2.5 h-2.5 bg-[#facc15] rounded-sm" />
-              <span className="w-2.5 h-2.5 bg-zinc-600 rounded-sm" />
-              <span className="ml-2 font-bold tracking-wider text-zinc-200 uppercase">
-                TITAN-BARBELL // LIVE 3D TELEMETRY
-              </span>
-            </div>
-            <div className="hidden sm:block text-[#facc15]">
-              INTERACTION: MOUSE TILT ACTIVE
-            </div>
-          </div>
-
-          {/* 3D Canvas */}
-          <HeroCanvasWrapper />
-
-          {/* Corner Crosshairs */}
-          <div className="absolute top-8 left-3 w-4 h-4 border-t-2 border-l-2 border-[#facc15] pointer-events-none" />
-          <div className="absolute top-8 right-3 w-4 h-4 border-t-2 border-r-2 border-[#facc15] pointer-events-none" />
-          <div className="absolute bottom-3 left-3 w-4 h-4 border-b-2 border-l-2 border-[#facc15] pointer-events-none" />
-          <div className="absolute bottom-3 right-3 w-4 h-4 border-b-2 border-r-2 border-[#facc15] pointer-events-none" />
         </div>
       </div>
 
